@@ -28,7 +28,7 @@ class zippyBot(commands.Bot):
         await load()
 
         global start_time
-        start_time = datetime.datetime.utcnow()
+        start_time = datetime.datetime.now(datetime.timezone.utc)
 
         await self.wait_until_ready()
         await self.change_presence(
@@ -232,7 +232,7 @@ async def ping(ctx):
             )
 
         global start_time
-        current_time = datetime.datetime.utcnow()
+        current_time = datetime.datetime.now(datetime.timezone.utc)
         delta = current_time - start_time
 
         hours, remainder = divmod(int(delta.total_seconds()), 3600)

@@ -19,7 +19,7 @@ latencies = []
 class zippyBot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix="$", intents=discord.Intents.all(), help_command=None
+            command_prefix=">> ", intents=discord.Intents.all(), help_command=None
         )
         self.synced = False
 

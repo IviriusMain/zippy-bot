@@ -109,12 +109,14 @@ class moderation(commands.Cog):
             await interaction.response.send_message(embed=discord.Embed(description="You don't have the permissions to do that!", color=discord.Color.red()), ephemeral=True)
             return
 
-        await interaction.response.defer()
-
         if channel is None:
             channel = interaction.channel
 
-        await channel.purge(limit=amount)
+        def check(msg):
+            return not msg.pinned
+
+        await channel.purge(limit=amount, check=check)
+
         embed = discord.Embed(
             title="Purge",
             description=f"Purged {amount} messages",
@@ -123,7 +125,8 @@ class moderation(commands.Cog):
         )
         embed.add_field(name="Channel", value=channel.mention, inline=False)
         embed.set_footer(text=f"Purged {amount} messages")
-        await interaction.followup.send(embed=embed)
+
+        await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="slowmode", description="Sets a slowmode for a channel")
     @app_commands.guild_only()
@@ -209,7 +212,7 @@ class moderation(commands.Cog):
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(name="The name of the channel", category="The category to create the channel in", private="Whether the channel should be private or not", emoji="The emoji to use for the channel")
     async def createchannel(self, interaction, emoji: str, name: str, category: discord.CategoryChannel = None, private: bool = False):
-        name = f"{emoji}┆{name}" if emoji else name
+        name = f"{emoji}｜{name}" if emoji else name
         if not private:
             await interaction.guild.create_text_channel(name=name, category=category)
         else:
@@ -284,7 +287,7 @@ class moderation(commands.Cog):
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(name="The name of the category", emoji="The emoji to use for the category")
     async def createcategory(self, interaction, emoji:str, name: str):
-        name = f"{emoji}┆{name}" if emoji else name
+        name = f"{emoji}｜{name}" if emoji else name
         category = await interaction.guild.create_category(name=name)
         embed = discord.Embed(
             title="Category Created",
@@ -346,7 +349,10 @@ class moderation(commands.Cog):
     @app_commands.guild_only()
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(channel="The channel to edit", name="The new name of the channel", category="The new category of the channel", private="Whether the channel should be private or not", slowmode="The new slowmode of the channel")
-    async def editchannel(self, interaction, channel: discord.TextChannel, name: str, category: discord.CategoryChannel = None, private: bool = False, slowmode: int = None):
+    async def editchannel(self, interaction, channel: discord.TextChannel, emoji: str, name: str, category: discord.CategoryChannel = None, private: bool = False, slowmode: int = None):
+        name = f"{emoji}｜{name}" if not emoji.strip()=="" else name
+        if not category:
+            category = channel.category
         await channel.edit(name=name, category=category, overwrites={interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False)} if private else None, slowmode_delay=slowmode)
         embed = discord.Embed(
             title="Channel Edited",

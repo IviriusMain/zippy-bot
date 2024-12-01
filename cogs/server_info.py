@@ -38,11 +38,11 @@ class server_info(commands.Cog):
             color=discord.Color.green()
         )
 
-        embed.add_field(name="Website <:Ivirius:1290061289258745896>", value="https://ivirius.vercel.app/", inline=False)
-        embed.add_field(name="Rebound 11 <:Rebound11:1290061222494081075>", value="https://ivirius.vercel.app/rebound11", inline=False)
-        embed.add_field(name="Ivirius Text Editor Plus <:TextEditorPlus:1290061177140936704>", value="https://ivirius.vercel.app/ivirius-text-editor-plus", inline=False)
-        embed.add_field(name="Ivirius Text Editor <:TextEditor:1290061049352949791>", value="https://ivirius.vercel.app/ivirius-text-editor/", inline=False)
-        embed.add_field(name="Crimson UI <:CrimsonUI:1290061257361064062>", value="https://ivirius.vercel.app/crimsonui", inline=False)
+        embed.add_field(name="Website <:Ivirius:1290061289258745896>", value="https://ivirius.com/", inline=False)
+        embed.add_field(name="Rebound 11 <:Rebound11:1290061222494081075>", value="https://ivirius.com/rebound11", inline=False)
+        embed.add_field(name="Ivirius Text Editor Plus <:TextEditorPlus:1290061177140936704>", value="https://ivirius.com/ivirius-text-editor-plus", inline=False)
+        embed.add_field(name="Ivirius Text Editor <:TextEditor:1290061049352949791>", value="https://ivirius.com/ivirius-text-editor/", inline=False)
+        embed.add_field(name="Crimson UI <:CrimsonUI:1290061257361064062>", value="https://ivirius.com/crimsonui", inline=False)
 
         embed.set_footer(text=f"Requested by {interaction.user.display_name}", icon_url=interaction.user.avatar.url if interaction.user.avatar else interaction.user.default_avatar.url)
 

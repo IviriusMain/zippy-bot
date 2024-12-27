@@ -2,19 +2,18 @@ from dotenv import load_dotenv
 import os
 import datetime
 import discord
-from discord.ext import commands, tasks
-from api import *
+from discord.ext import commands
+from api import keep_alive
 import statistics
 import time
 import sys
-from api import *
-from utils import *
-from constants import *
+from constants import TOKEN
 
 load_dotenv()
 
 start_time = None
 latencies = []
+
 
 class zippyBot(commands.Bot):
     def __init__(self):
@@ -22,7 +21,6 @@ class zippyBot(commands.Bot):
             command_prefix=">> ", intents=discord.Intents.all(), help_command=None
         )
         self.synced = False
-
 
     async def on_ready(self):
         await load()
@@ -35,7 +33,8 @@ class zippyBot(commands.Bot):
             activity=discord.CustomActivity(
                 name="Custom Status",
                 state="Watching Ivirius Text Editor Plus",
-            ), status=discord.Status.do_not_disturb
+            ),
+            status=discord.Status.do_not_disturb,
         )
         if not self.synced:
             await self.tree.sync()
@@ -53,6 +52,7 @@ async def load():
         if filename.endswith(".py"):
             await bot.load_extension(f"cogs.{filename[:-3]}")
 
+
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -63,44 +63,46 @@ async def on_message(message):
 
 @bot.event
 async def on_member_join(member):
+    if member.guild.id != 1137161703000375336:
+        return
+
     embed = discord.Embed(
         title="Welcome to the server!",
         description=f"Welcome to the server {member.name}! Please read the rules and have fun!",
         color=discord.Color.brand_red(),
     )
-    await member.send(
-        embed=embed
-    )
+    await member.send(embed=embed)
+
 
 @bot.event
 async def on_member_remove(member):
-    print(member)
-    if member.guild.id == 1137161703000375336:
-        # Get user information
-        user = member.name
-        nickname = member.nick
-        join_date = member.joined_at
-        total_time = datetime.datetime.now() - join_date
+    if member.guild.id != 1137161703000375336:
+        return
 
-        join_date_formatted = join_date.strftime("%Y-%m-%d %H:%M:%S")
-        total_time_formatted = str(total_time)
+    user = member.name
+    nickname = member.nick
+    join_date = member.joined_at
+    total_time = datetime.datetime.now() - join_date
 
-        embed = discord.Embed(
-            title="Goodbye!",
-            description=f"**{user}** ({nickname}) has left the server.",
-            color=discord.Color.red(),
-        )
+    join_date_formatted = join_date.strftime("%Y-%m-%d %H:%M:%S")
+    total_time_formatted = str(total_time)
 
-        embed.add_field(name="Join Date", value=join_date_formatted, inline=False)
-        embed.add_field(
-            name="Total Time in Server", value=total_time_formatted, inline=False
-        )
+    embed = discord.Embed(
+        title="Goodbye!",
+        description=f"**{user}** ({nickname}) has left the server.",
+        color=discord.Color.red(),
+    )
 
-        roles = [role.mention for role in member.roles]
-        embed.add_field(name="Roles", value=", ".join(roles), inline=False)
+    embed.add_field(name="Join Date", value=join_date_formatted, inline=False)
+    embed.add_field(
+        name="Total Time in Server", value=total_time_formatted, inline=False
+    )
 
-        channel = bot.get_channel(1188420266234228809)
-        await channel.send(embed=embed)
+    roles = [role.mention for role in member.roles]
+    embed.add_field(name="Roles", value=", ".join(roles), inline=False)
+
+    channel = bot.get_channel(1188420266234228809)
+    await channel.send(embed=embed)
 
 
 @bot.event
@@ -219,7 +221,9 @@ async def ping(ctx):
         end = time.perf_counter()
         latency = (end - ctx.start) * 1000
 
-        embed.add_field(name="Bot Latency", value=f"{bot.latency * 1000:.2f} ms", inline=False)
+        embed.add_field(
+            name="Bot Latency", value=f"{bot.latency * 1000:.2f} ms", inline=False
+        )
         embed.add_field(name="Message Latency", value=f"{latency:.2f} ms", inline=False)
 
         # Calculate the average ping of the bot in the last 10 minutes

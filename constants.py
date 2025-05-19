@@ -3,4 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = os.environ["TOKEN"]
+if os.environ.get("ENVIRONMENT") == "TESTING":
+    TOKEN = os.environ["TOKEN_TEST"]
+else:
+    TOKEN = os.environ["TOKEN"]

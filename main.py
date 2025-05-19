@@ -262,5 +262,6 @@ async def ping(ctx):
 
 
 if __name__ == "__main__":
-    keep_alive()
+    if os.environ.get("CLOUD", "True") == "True":
+        keep_alive()
     bot.run(token=TOKEN)

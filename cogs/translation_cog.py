@@ -50,6 +50,19 @@ class TranslationCog(commands.Cog):
                 
             except Exception as e:
                 print(f"Translation error: {e}")
+                # Remove the bot's translate emoji reaction in case of error
+                try:
+                    # Find the custom emoji object in the message's reactions
+                    for reaction in message.reactions:
+                        if (
+                            reaction.emoji
+                            and hasattr(reaction.emoji, "id")
+                            and reaction.emoji.id == self.translate_emoji_id
+                        ):
+                            await reaction.remove(self.bot.user)
+                            break
+                except Exception as remove_error:
+                    print(f"Failed to remove reaction: {remove_error}")
 
     async def translate_text(self, text):
         """Translate text to English using pollinations.ai API (aiohttp)"""

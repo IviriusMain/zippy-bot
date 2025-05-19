@@ -29,6 +29,10 @@ class TranslationCog(commands.Cog):
                 if any(user.id == self.bot.user.id for user in users):
                     return  # Bot has already reacted, so skip
 
+        # React immediately to prevent race conditions
+        translate_emoji = f"<:translate:{self.translate_emoji_id}>"
+        await message.add_reaction(translate_emoji)
+
         # Check if there's content to translate
         if not message.content:
             return
@@ -38,16 +42,12 @@ class TranslationCog(commands.Cog):
             try:
                 # Translate the message
                 translated_text = await self.translate_text(message.content)
-
+                
                 # Send the translated message as a reply
                 await message.reply(
                     f"**Translation:** {translated_text}", mention_author=False
                 )
-
-                # Add the translate emoji reaction to indicate successful translation
-                translate_emoji = f"<:translate:{self.translate_emoji_id}>"
-                await message.add_reaction(translate_emoji)
-
+                
             except Exception as e:
                 print(f"Translation error: {e}")
 

@@ -21,7 +21,9 @@ class TranslationCog(commands.Cog):
         # Check if the bot has already reacted with the translate emoji
         for reaction in message.reactions:
             if (
-                reaction.emoji and hasattr(reaction.emoji, 'id') and reaction.emoji.id == self.translate_emoji_id
+                reaction.emoji
+                and hasattr(reaction.emoji, "id")
+                and reaction.emoji.id == self.translate_emoji_id
             ):
                 users = [user async for user in reaction.users()]
                 if any(user.id == self.bot.user.id for user in users):
@@ -36,17 +38,16 @@ class TranslationCog(commands.Cog):
             try:
                 # Translate the message
                 translated_text = await self.translate_text(message.content)
-                
+
                 # Send the translated message as a reply
                 await message.reply(
-                    f"**Translation:** {translated_text}",
-                    mention_author=False
+                    f"**Translation:** {translated_text}", mention_author=False
                 )
-                
+
                 # Add the translate emoji reaction to indicate successful translation
                 translate_emoji = f"<:translate:{self.translate_emoji_id}>"
                 await message.add_reaction(translate_emoji)
-                
+
             except Exception as e:
                 print(f"Translation error: {e}")
 
@@ -54,18 +55,22 @@ class TranslationCog(commands.Cog):
         """Translate text to English using pollinations.ai API (aiohttp)"""
         # URL encode the text and system prompt
         encoded_text = urllib.parse.quote(text)
-        system_prompt = urllib.parse.quote("You are an excellent translator. Translate the following text to English. Only return the translated text without any explanations.")
-        
+        system_prompt = urllib.parse.quote(
+            "You are an excellent translator. Translate the following text to English. Only return the translated text without any explanations."
+        )
+
         # Prepare API URL
         url = f"https://text.pollinations.ai/{encoded_text}?model=openai&system={system_prompt}"
-        
+
         async with aiohttp.ClientSession() as session:
             async with session.get(url, timeout=10) as response:
                 if response.status == 200:
                     return await response.text()
                 else:
                     error_text = await response.text()
-                    raise Exception(f"Translation API returned status code {response.status}: {error_text}")
+                    raise Exception(
+                        f"Translation API returned status code {response.status}: {error_text}"
+                    )
 
     @commands.Cog.listener()
     async def on_ready(self):
